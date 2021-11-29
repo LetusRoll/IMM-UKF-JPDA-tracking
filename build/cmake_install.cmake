@@ -132,6 +132,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/cxy/tracking_ws/build/gtest/cmake_install.cmake")
   include("/home/cxy/tracking_ws/build/JPDA_UKF_Tracking/cmake_install.cmake")
+  include("/home/cxy/tracking_ws/build/tf_pub/cmake_install.cmake")
 
 endif()
 

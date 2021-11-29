@@ -4,7 +4,7 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-15 19:49:36
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-26 21:14:58
+ * @LastEditTime: 2021-11-29 17:27:14
  */
 #ifndef IMM_UKF_JPDA_H
 #define IMM_UKF_JPDA_H
@@ -35,6 +35,8 @@ private:
     double dyaw_determinant_threshold;
     double S_determinant_threshold;
     double gating_threshold;
+    double detection_probability;
+    double gate_probability;
 
 public:
     IMM_UKF_JPDA();
@@ -54,6 +56,8 @@ public:
                                JPDA_UKF_Tracking::object_array matched_object);
 
     void SecondInit(UKF target, JPDA_UKF_Tracking::object_array matched_object, double dt); //二次初始化
+
+    void UpdateTargetState(UKF target, JPDA_UKF_Tracking::object_array matched_object); //更新跟踪目标的跟踪状态
 
     void Process(const JPDA_UKF_Tracking::object_array &objects);
 };

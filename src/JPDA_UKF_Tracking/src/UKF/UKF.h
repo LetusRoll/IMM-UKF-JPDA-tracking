@@ -4,14 +4,16 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-09 22:20:50
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-26 21:38:35
+ * @LastEditTime: 2021-11-29 22:40:21
  */
 
 #ifndef UKF_H
 #define UKF_H
 
 #include <Eigen/Dense>
-
+#include <vector>
+#include "JPDA_UKF_Tracking/object.h"
+#include "JPDA_UKF_Tracking/object_array.h"
 const double PI = 3.14159;
 enum TrackingState : int
 {
@@ -33,6 +35,7 @@ class UKF
 {
 public:
     int tracking_num;
+    int life_time;
     bool is_static;
     bool is_stable;
 
@@ -80,6 +83,10 @@ public:
     Eigen::MatrixXd X_predict_sig_ctrv;
     Eigen::MatrixXd X_predict_sig_rm;
 
+    Eigen::MatrixXd Z_sigma_cv; //
+    Eigen::MatrixXd Z_sigma_ctrv;
+    Eigen::MatrixXd Z_sigma_rm;
+
     Eigen::MatrixXd Z_predict_cv; //预测测量量
     Eigen::MatrixXd Z_predict_ctrv;
     Eigen::MatrixXd Z_predict_rm;
@@ -96,10 +103,15 @@ public:
     Eigen::MatrixXd C_xz_ctrv;
     Eigen::MatrixXd C_xz_rm;
 
+    Eigen::MatrixXd K_cv; //卡尔曼增益
+    Eigen::MatrixXd K_ctrv;
+    Eigen::MatrixXd K_rm;
+
 public:
     UKF();
     ~UKF();
     void Initialize(Eigen::VectorXd &init_meas);
+    double NormalizeAngle(double angle);
     void Predict(const double dt);
     void InitialCovQ(const double dt);   //初始化Q
     void Interaction();                  //计算交互矩阵
@@ -110,7 +122,15 @@ public:
     void CTRV(const Eigen::MatrixXd &X_sig, const double dt);
     void RM(const Eigen::MatrixXd &X_sig, const double dt);
     void PredictMeasurement(int mode); //预测测量量
-    void Update();
+    void Update(JPDA_UKF_Tracking::object_array matched_object,
+                double gating_threshold, double detection_probability, double gate_probability);
+    void UpdateMotion(JPDA_UKF_Tracking::object_array matched_object, std::vector<double> model_update_prob,
+                      double gating_threshold, double detection_probability, double gate_probability);
+    void CalculateKalmanGain();
+    void FindMaxZMaxS(Eigen::VectorXd max_Z, Eigen::MatrixXd max_S);
+    void UpdateModelProbability(std::vector<double> update_model_prob);
+    void CombineModel();
+    void UpdateYawWithHighProb();
 };
 
 #endif

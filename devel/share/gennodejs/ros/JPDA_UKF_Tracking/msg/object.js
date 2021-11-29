@@ -11,9 +11,9 @@ const _deserializer = _ros_msg_utils.Deserialize;
 const _arrayDeserializer = _deserializer.Array;
 const _finder = _ros_msg_utils.Find;
 const _getByteLength = _ros_msg_utils.getByteLength;
-let sensor_msgs = _finder('sensor_msgs');
-let std_msgs = _finder('std_msgs');
 let geometry_msgs = _finder('geometry_msgs');
+let std_msgs = _finder('std_msgs');
+let sensor_msgs = _finder('sensor_msgs');
 
 //-----------------------------------------------------------
 

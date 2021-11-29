@@ -3,7 +3,7 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-15 21:16:54
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-26 21:30:12
+ * @LastEditTime: 2021-11-29 17:29:44
  */
 
 #include "IMM-UKF-JPDA.h"
@@ -108,6 +108,47 @@ void IMM_UKF_JPDA::MeasurementValidation(const JPDA_UKF_Tracking::object_array &
     matching_mat[matched_index] = 1;
 }
 
+void IMM_UKF_JPDA::UpdateTargetState(UKF target, JPDA_UKF_Tracking::object_array matched_object)
+{
+    target.life_time++;
+    //更新Tracking_num
+    if (matched_object.objects.size() > 0)
+    {
+        if (target.tracking_num < TrackingState::Stable)
+        {
+            target.tracking_num++;
+        }
+        else if (target.tracking_num == TrackingState::Stable)
+        {
+            target.tracking_num = TrackingState::Stable;
+        }
+        else if (target.tracking_num > TrackingState::Stable && target.tracking_num <= TrackingState::Lost)
+        {
+            target.tracking_num = TrackingState::Stable;
+        }
+    }
+    else
+    {
+        if (target.tracking_num < TrackingState::Stable)
+        {
+            target.tracking_num = TrackingState::Die;
+        }
+        else if (target.tracking_num >= TrackingState::Stable && target.tracking_num < TrackingState::Lost)
+        {
+            target.tracking_num++;
+        }
+        else if (target.tracking_num == TrackingState::Lost)
+        {
+            target.tracking_num = TrackingState::Die;
+        }
+    }
+
+    if (target.tracking_num == TrackingState::Stable || target.tracking_num == TrackingState::Occlusion)
+    {
+        target.is_stable = true;
+    }
+}
+
 void IMM_UKF_JPDA::DataAssociation(const JPDA_UKF_Tracking::object_array &objects, UKF target,
                                    Eigen::MatrixXd matching_mat, JPDA_UKF_Tracking::object_array matched_object,
                                    Eigen::MatrixXd max_Z, Eigen::MatrixXd max_S)
@@ -195,7 +236,13 @@ void IMM_UKF_JPDA::Process(const JPDA_UKF_Tracking::object_array &objects)
         if (targets[i].tracking_num == TrackingState::Init)
         {
             SecondInit(targets[i], matched_object, dt);
+            continue;
         }
-        targets[i].Update();
+        UpdateTargetState(targets[i], matched_object);
+        if (targets[i].tracking_num == TrackingState::Die)
+        {
+            continue;
+        }
+        targets[i].Update(matched_object, gating_threshold, detection_probability, gate_probability);
     }
 }

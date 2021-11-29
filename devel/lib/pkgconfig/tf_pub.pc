@@ -1,0 +1,8 @@
+prefix=/home/cxy/tracking_ws/devel
+
+Name: tf_pub
+Description: Description of tf_pub
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
