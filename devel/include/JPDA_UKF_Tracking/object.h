@@ -21,6 +21,7 @@
 #include <geometry_msgs/Vector3.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <geometry_msgs/PolygonStamped.h>
+#include <geometry_msgs/Twist.h>
 
 namespace JPDA_UKF_Tracking
 {
@@ -36,7 +37,8 @@ struct object_
     , dimensions()
     , variance()
     , pointcloud()
-    , convex_hull()  {
+    , convex_hull()
+    , velocity()  {
     }
   object_(const ContainerAllocator& _alloc)
     : header(_alloc)
@@ -45,7 +47,8 @@ struct object_
     , dimensions(_alloc)
     , variance(_alloc)
     , pointcloud(_alloc)
-    , convex_hull(_alloc)  {
+    , convex_hull(_alloc)
+    , velocity(_alloc)  {
   (void)_alloc;
     }
 
@@ -71,6 +74,9 @@ struct object_
 
    typedef  ::geometry_msgs::PolygonStamped_<ContainerAllocator>  _convex_hull_type;
   _convex_hull_type convex_hull;
+
+   typedef  ::geometry_msgs::Twist_<ContainerAllocator>  _velocity_type;
+  _velocity_type velocity;
 
 
 
@@ -107,7 +113,8 @@ bool operator==(const ::JPDA_UKF_Tracking::object_<ContainerAllocator1> & lhs, c
     lhs.dimensions == rhs.dimensions &&
     lhs.variance == rhs.variance &&
     lhs.pointcloud == rhs.pointcloud &&
-    lhs.convex_hull == rhs.convex_hull;
+    lhs.convex_hull == rhs.convex_hull &&
+    lhs.velocity == rhs.velocity;
 }
 
 template<typename ContainerAllocator1, typename ContainerAllocator2>
@@ -164,12 +171,12 @@ struct MD5Sum< ::JPDA_UKF_Tracking::object_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "75b5aef8e67be81912fbb3bf0345714b";
+    return "0551e8a26c4794e46875c54cd3aa7a7d";
   }
 
   static const char* value(const ::JPDA_UKF_Tracking::object_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x75b5aef8e67be819ULL;
-  static const uint64_t static_value2 = 0x12fbb3bf0345714bULL;
+  static const uint64_t static_value1 = 0x0551e8a26c4794e4ULL;
+  static const uint64_t static_value2 = 0x6875c54cd3aa7a7dULL;
 };
 
 template<class ContainerAllocator>
@@ -196,7 +203,7 @@ struct Definition< ::JPDA_UKF_Tracking::object_<ContainerAllocator> >
 "geometry_msgs/Vector3       variance  ##\n"
 "sensor_msgs/PointCloud2     pointcloud\n"
 "geometry_msgs/PolygonStamped     convex_hull\n"
-"\n"
+"geometry_msgs/Twist      velocity\n"
 "================================================================================\n"
 "MSG: std_msgs/Header\n"
 "# Standard metadata for higher-level stamped data types.\n"
@@ -319,6 +326,11 @@ struct Definition< ::JPDA_UKF_Tracking::object_<ContainerAllocator> >
 "float32 x\n"
 "float32 y\n"
 "float32 z\n"
+"================================================================================\n"
+"MSG: geometry_msgs/Twist\n"
+"# This expresses velocity in free space broken into its linear and angular parts.\n"
+"Vector3  linear\n"
+"Vector3  angular\n"
 ;
   }
 
@@ -344,6 +356,7 @@ namespace serialization
       stream.next(m.variance);
       stream.next(m.pointcloud);
       stream.next(m.convex_hull);
+      stream.next(m.velocity);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -382,6 +395,9 @@ struct Printer< ::JPDA_UKF_Tracking::object_<ContainerAllocator> >
     s << indent << "convex_hull: ";
     s << std::endl;
     Printer< ::geometry_msgs::PolygonStamped_<ContainerAllocator> >::stream(s, indent + "  ", v.convex_hull);
+    s << indent << "velocity: ";
+    s << std::endl;
+    Printer< ::geometry_msgs::Twist_<ContainerAllocator> >::stream(s, indent + "  ", v.velocity);
   }
 };
 

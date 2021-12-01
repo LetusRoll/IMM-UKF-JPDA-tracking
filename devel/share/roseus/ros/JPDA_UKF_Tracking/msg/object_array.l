@@ -78,7 +78,7 @@
    self)
   )
 
-(setf (get JPDA_UKF_Tracking::object_array :md5sum-) "e91d385083a6f18bcdb564c8ce15cc81")
+(setf (get JPDA_UKF_Tracking::object_array :md5sum-) "81187b16050baf6314918c62baf7c77b")
 (setf (get JPDA_UKF_Tracking::object_array :datatype-) "JPDA_UKF_Tracking/object_array")
 (setf (get JPDA_UKF_Tracking::object_array :definition-)
       "std_msgs/Header     hearder
@@ -109,7 +109,7 @@ geometry_msgs/Vector3       dimensions##长宽高
 geometry_msgs/Vector3       variance  ##
 sensor_msgs/PointCloud2     pointcloud
 geometry_msgs/PolygonStamped     convex_hull
-
+geometry_msgs/Twist      velocity
 ================================================================================
 MSG: geometry_msgs/Pose
 # A representation of pose in free space, composed of position and orientation. 
@@ -216,10 +216,16 @@ MSG: geometry_msgs/Point32
 float32 x
 float32 y
 float32 z
+================================================================================
+MSG: geometry_msgs/Twist
+# This expresses velocity in free space broken into its linear and angular parts.
+Vector3  linear
+Vector3  angular
+
 ")
 
 
 
-(provide :JPDA_UKF_Tracking/object_array "e91d385083a6f18bcdb564c8ce15cc81")
+(provide :JPDA_UKF_Tracking/object_array "81187b16050baf6314918c62baf7c77b")
 
 

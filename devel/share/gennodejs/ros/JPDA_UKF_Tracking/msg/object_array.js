@@ -84,7 +84,7 @@ class object_array {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return 'e91d385083a6f18bcdb564c8ce15cc81';
+    return '81187b16050baf6314918c62baf7c77b';
   }
 
   static messageDefinition() {
@@ -118,7 +118,7 @@ class object_array {
     geometry_msgs/Vector3       variance  ##
     sensor_msgs/PointCloud2     pointcloud
     geometry_msgs/PolygonStamped     convex_hull
-    
+    geometry_msgs/Twist      velocity
     ================================================================================
     MSG: geometry_msgs/Pose
     # A representation of pose in free space, composed of position and orientation. 
@@ -225,6 +225,12 @@ class object_array {
     float32 x
     float32 y
     float32 z
+    ================================================================================
+    MSG: geometry_msgs/Twist
+    # This expresses velocity in free space broken into its linear and angular parts.
+    Vector3  linear
+    Vector3  angular
+    
     `;
   }
 

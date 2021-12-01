@@ -11,7 +11,7 @@ import sensor_msgs.msg
 import std_msgs.msg
 
 class object(genpy.Message):
-  _md5sum = "75b5aef8e67be81912fbb3bf0345714b"
+  _md5sum = "0551e8a26c4794e46875c54cd3aa7a7d"
   _type = "JPDA_UKF_Tracking/object"
   _has_header = True  # flag to mark the presence of a Header object
   _full_text = """###物体类型
@@ -22,7 +22,7 @@ geometry_msgs/Vector3       dimensions##长宽高
 geometry_msgs/Vector3       variance  ##
 sensor_msgs/PointCloud2     pointcloud
 geometry_msgs/PolygonStamped     convex_hull
-
+geometry_msgs/Twist      velocity
 ================================================================================
 MSG: std_msgs/Header
 # Standard metadata for higher-level stamped data types.
@@ -144,9 +144,15 @@ MSG: geometry_msgs/Point32
 
 float32 x
 float32 y
-float32 z"""
-  __slots__ = ['header','id','pose','dimensions','variance','pointcloud','convex_hull']
-  _slot_types = ['std_msgs/Header','uint32','geometry_msgs/Pose','geometry_msgs/Vector3','geometry_msgs/Vector3','sensor_msgs/PointCloud2','geometry_msgs/PolygonStamped']
+float32 z
+================================================================================
+MSG: geometry_msgs/Twist
+# This expresses velocity in free space broken into its linear and angular parts.
+Vector3  linear
+Vector3  angular
+"""
+  __slots__ = ['header','id','pose','dimensions','variance','pointcloud','convex_hull','velocity']
+  _slot_types = ['std_msgs/Header','uint32','geometry_msgs/Pose','geometry_msgs/Vector3','geometry_msgs/Vector3','sensor_msgs/PointCloud2','geometry_msgs/PolygonStamped','geometry_msgs/Twist']
 
   def __init__(self, *args, **kwds):
     """
@@ -156,7 +162,7 @@ float32 z"""
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,id,pose,dimensions,variance,pointcloud,convex_hull
+       header,id,pose,dimensions,variance,pointcloud,convex_hull,velocity
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -179,6 +185,8 @@ float32 z"""
         self.pointcloud = sensor_msgs.msg.PointCloud2()
       if self.convex_hull is None:
         self.convex_hull = geometry_msgs.msg.PolygonStamped()
+      if self.velocity is None:
+        self.velocity = geometry_msgs.msg.Twist()
     else:
       self.header = std_msgs.msg.Header()
       self.id = 0
@@ -187,6 +195,7 @@ float32 z"""
       self.variance = geometry_msgs.msg.Vector3()
       self.pointcloud = sensor_msgs.msg.PointCloud2()
       self.convex_hull = geometry_msgs.msg.PolygonStamped()
+      self.velocity = geometry_msgs.msg.Twist()
 
   def _get_types(self):
     """
@@ -251,6 +260,8 @@ float32 z"""
       for val1 in self.convex_hull.polygon.points:
         _x = val1
         buff.write(_get_struct_3f().pack(_x.x, _x.y, _x.z))
+      _x = self
+      buff.write(_get_struct_6d().pack(_x.velocity.linear.x, _x.velocity.linear.y, _x.velocity.linear.z, _x.velocity.angular.x, _x.velocity.angular.y, _x.velocity.angular.z))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -274,6 +285,8 @@ float32 z"""
         self.pointcloud = sensor_msgs.msg.PointCloud2()
       if self.convex_hull is None:
         self.convex_hull = geometry_msgs.msg.PolygonStamped()
+      if self.velocity is None:
+        self.velocity = geometry_msgs.msg.Twist()
       end = 0
       _x = self
       start = end
@@ -361,6 +374,10 @@ float32 z"""
         end += 12
         (_x.x, _x.y, _x.z,) = _get_struct_3f().unpack(str[start:end])
         self.convex_hull.polygon.points.append(val1)
+      _x = self
+      start = end
+      end += 48
+      (_x.velocity.linear.x, _x.velocity.linear.y, _x.velocity.linear.z, _x.velocity.angular.x, _x.velocity.angular.y, _x.velocity.angular.z,) = _get_struct_6d().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -424,6 +441,8 @@ float32 z"""
       for val1 in self.convex_hull.polygon.points:
         _x = val1
         buff.write(_get_struct_3f().pack(_x.x, _x.y, _x.z))
+      _x = self
+      buff.write(_get_struct_6d().pack(_x.velocity.linear.x, _x.velocity.linear.y, _x.velocity.linear.z, _x.velocity.angular.x, _x.velocity.angular.y, _x.velocity.angular.z))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -448,6 +467,8 @@ float32 z"""
         self.pointcloud = sensor_msgs.msg.PointCloud2()
       if self.convex_hull is None:
         self.convex_hull = geometry_msgs.msg.PolygonStamped()
+      if self.velocity is None:
+        self.velocity = geometry_msgs.msg.Twist()
       end = 0
       _x = self
       start = end
@@ -535,6 +556,10 @@ float32 z"""
         end += 12
         (_x.x, _x.y, _x.z,) = _get_struct_3f().unpack(str[start:end])
         self.convex_hull.polygon.points.append(val1)
+      _x = self
+      start = end
+      end += 48
+      (_x.velocity.linear.x, _x.velocity.linear.y, _x.velocity.linear.z, _x.velocity.angular.x, _x.velocity.angular.y, _x.velocity.angular.z,) = _get_struct_6d().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -561,6 +586,12 @@ def _get_struct_3f():
     if _struct_3f is None:
         _struct_3f = struct.Struct("<3f")
     return _struct_3f
+_struct_6d = None
+def _get_struct_6d():
+    global _struct_6d
+    if _struct_6d is None:
+        _struct_6d = struct.Struct("<6d")
+    return _struct_6d
 _struct_B2I = None
 def _get_struct_B2I():
     global _struct_B2I

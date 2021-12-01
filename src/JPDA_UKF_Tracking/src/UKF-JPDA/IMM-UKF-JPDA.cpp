@@ -3,18 +3,84 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-15 21:16:54
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-29 17:29:44
+ * @LastEditTime: 2021-11-30 23:01:01
  */
 
 #include "IMM-UKF-JPDA.h"
 
-IMM_UKF_JPDA::IMM_UKF_JPDA()
+IMM_UKF_JPDA::IMM_UKF_JPDA(ros::NodeHandle nh, ros::NodeHandle private_nh)
 {
     init = false;
+    private_nh.param<double>("P_determinant_threshold", P_determinant_threshold, 1000.0);
+    private_nh.param<double>("dyaw_determinant_threshold", dyaw_determinant_threshold, 1000.0);
+    private_nh.param<double>("S_determinant_threshold", S_determinant_threshold, 1000.0);
+    private_nh.param<double>("gating_threshold", gating_threshold, 9.22);
+    private_nh.param<double>("detection_probability", detection_probability, 0.9);
+    private_nh.param<double>("gate_probability", gate_probability, 0.99);
+    private_nh.param<double>("life_time_threshold", life_time_threshold, 8);
+    private_nh.param<double>("avg_static_threshold", avg_static_threshold, 0.3);
+    private_nh.param<double>("current_vel_threshold", current_vel_threshold, 0.5);
+    private_nh.param<int>("static_frame", static_frame, 3);
+
+    ros::Subscriber object_sub = nh.subscribe("/objects", 1, &Callback, this);
+    ros::Publisher object_pub = nh.advertise<JPDA_UKF_Tracking::object_array>("/tracking_objects", 100);
+    ros::spin();
 }
 
-void IMM_UKF_JPDA::Output()
+void IMM_UKF_JPDA::Callback(const JPDA_UKF_Tracking::object_array &objects)
 {
+    if (GetTransform())
+    {
+        JPDA_UKF_Tracking::object_array transformed_objects;
+        JPDA_UKF_Tracking::object_array processed_objects;
+        JPDA_UKF_Tracking::object_array out_objects;
+        TransformLocal2World(objects, transformed_objects);
+        Process(transformed_objects, processed_objects);
+        TransformWorld2Local(processed_objects, out_objects);
+    }
+    else
+    {
+        ROS_INFO("Could not find coordiante transformation!");
+        return;
+    }
+}
+
+bool IMM_UKF_JPDA::GetTransform()
+{
+    bool is_get_transform = true;
+    try
+    {
+
+        tf_listener.waitForTransform("rslidar", "odom", ros::Time(0), ros::Duration(1.0));
+        tf_listener.lookupTransform("odom", "rslidar", ros::Time(0), local2world);
+    }
+    catch (tf::TransformException ex)
+    {
+        ROS_ERROR("%s", ex.what());
+
+        is_get_transform = false;
+    }
+}
+
+void IMM_UKF_JPDA::Output(const JPDA_UKF_Tracking::object_array &objects, JPDA_UKF_Tracking::object_array &out_objects)
+{
+    out_objects.hearder = objects.hearder;
+    for (int i = 0; i < targets.size(); ++i)
+    {
+        if (!targets[i].is_static && targets[i].is_stable)
+        {
+            JPDA_UKF_Tracking::object object;
+            object.id = i;
+            object.pose.position.x = targets[i].X_merge[0];
+            object.pose.position.y = targets[i].X_merge[1];
+            object.velocity.linear.x = targets[i].X_merge[2];
+            object.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0, 0, targets[i].X_merge[3]);
+            object.velocity.angular.z = targets[i].X_merge[4];
+            object.dimensions = targets[i].object_.dimensions;
+
+            out_objects.objects.push_back(object);
+        }
+    }
 }
 
 void IMM_UKF_JPDA::TransformLocal2World(const JPDA_UKF_Tracking::object_array &objects, JPDA_UKF_Tracking::object_array &transformed_objects)
@@ -26,31 +92,44 @@ void IMM_UKF_JPDA::TransformLocal2World(const JPDA_UKF_Tracking::object_array &o
         JPDA_UKF_Tracking::object transformed_object;
         transformed_object = object;
         transformed_object.header = global_header;
-        transformed_object.pose = Gettransformedpose(object.pose);
+        transformed_object.pose = Gettransformedpose(object.pose, local2world);
         transformed_objects.objects.push_back(transformed_object);
     }
 }
 
-geometry_msgs::Pose IMM_UKF_JPDA::Gettransformedpose(const geometry_msgs::Pose &in_pose)
+void IMM_UKF_JPDA::TransformWorld2Local(const JPDA_UKF_Tracking::object_array &in_objects, JPDA_UKF_Tracking::object_array &out_objects)
+{
+    out_objects.hearder = local_header;
+    for (auto const object : in_objects.objects)
+    {
+        JPDA_UKF_Tracking::object transformed_object;
+        transformed_object = object;
+        transformed_object.header = global_header;
+        transformed_object.pose = Gettransformedpose(object.pose, world2local);
+        out_objects.objects.push_back(transformed_object);
+    }
+}
+
+geometry_msgs::Pose IMM_UKF_JPDA::Gettransformedpose(const geometry_msgs::Pose &in_pose, tf::StampedTransform tf_trans)
 {
     tf::Transform tf;
     geometry_msgs::Pose out_pose;
     tf.setOrigin(tf::Vector3(in_pose.position.x, in_pose.position.y, in_pose.position.z));
     tf.setRotation(tf::Quaternion(in_pose.orientation.x, in_pose.orientation.y, in_pose.orientation.z, in_pose.orientation.w));
-    tf::poseTFToMsg(local2world * tf, out_pose);
+    tf::poseTFToMsg(tf_trans * tf, out_pose);
     return out_pose;
 }
 
 //初始化
 void IMM_UKF_JPDA::Initialize(const JPDA_UKF_Tracking::object_array &objects)
 {
-    JPDA_UKF_Tracking::object_array transformed_objects;
-    TransformLocal2World(objects, transformed_objects);
-    for (int i = 0; i < transformed_objects.objects.size(); ++i)
+    //JPDA_UKF_Tracking::object_array transformed_objects;
+    //TransformLocal2World(objects, transformed_objects);
+    for (int i = 0; i < objects.objects.size(); ++i)
     {
         UKF ukf;
         Eigen::VectorXd init_meas(2);
-        init_meas << transformed_objects.objects[i].pose.position.x, transformed_objects.objects[i].pose.position.y;
+        init_meas << objects.objects[i].pose.position.x, objects.objects[i].pose.position.y;
         ukf.Initialize(init_meas);
         targets.push_back(ukf);
     }
@@ -101,11 +180,27 @@ void IMM_UKF_JPDA::MeasurementValidation(const JPDA_UKF_Tracking::object_array &
                 smallest_nis = nis;
                 matched_index = i;
                 tmp_object = objects.objects[i];
+                target.object_ = tmp_object;
             }
         }
     }
     matched_object.objects.push_back(tmp_object);
     matching_mat[matched_index] = 1;
+}
+
+void IMM_UKF_JPDA::MakeNewTarget(Eigen::MatrixXd matching_mat, const JPDA_UKF_Tracking::object_array &objects)
+{
+    for (int i = 0; i < objects.objects.size(); ++i)
+    {
+        if (matching_mat[i] == 0)
+        {
+            Eigen::VectorXd init_meas;
+            init_meas << objects.objects[i].pose.position.x, objects.objects[i].pose.position.y;
+            UKF ukf;
+            ukf.Initialize(init_meas);
+            targets.push_back(ukf);
+        }
+    }
 }
 
 void IMM_UKF_JPDA::UpdateTargetState(UKF target, JPDA_UKF_Tracking::object_array matched_object)
@@ -195,7 +290,38 @@ void IMM_UKF_JPDA::SecondInit(UKF target, JPDA_UKF_Tracking::object_array matche
     }
 }
 
-void IMM_UKF_JPDA::Process(const JPDA_UKF_Tracking::object_array &objects)
+void IMM_UKF_JPDA::ClassifyStaticObject()
+{
+    for (int i = 0; i < targets.size(); ++i)
+    {
+        double current_vel = targets[i].X_merge[2];
+        targets[i].vel_history.push_back(current_vel);
+
+        if (targets[i].tracking_num == TrackingState::Stable && targets[i].life_time > life_time_threshold)
+        {
+            double sum_vel = 0;
+            double vel = 0;
+            int index = 0;
+            for (auto j = targets[i].vel_history.rbegin(); index < static_frame; ++j)
+            {
+                vel = *j;
+                sum_vel += vel;
+                ++index;
+            }
+            double avg_vel = sum_vel / static_frame;
+            if (current_vel > current_vel_threshold && avg_vel > avg_static_threshold)
+            {
+                targets[i].is_static = false;
+            }
+            else
+            {
+                targets[i].is_static = true;
+            }
+        }
+    }
+}
+
+void IMM_UKF_JPDA::Process(const JPDA_UKF_Tracking::object_array &objects, JPDA_UKF_Tracking::object_array &out_objects)
 {
     double timestamp = objects.hearder.stamp.toSec();
 
@@ -205,15 +331,15 @@ void IMM_UKF_JPDA::Process(const JPDA_UKF_Tracking::object_array &objects)
     {
         Initialize(objects);
 
-        Output();
+        Output(objects, out_objects);
         init = true;
     }
     Eigen::MatrixXd matching_mat;
     matching_mat.resize(objects.objects.size(), 1);
     matching_mat.fill(0);
 
-    // JPDA_UKF_Tracking::object_array transformed_objects;
-    // TransformLocal2World(objects,transformed_objects);
+    JPDA_UKF_Tracking::object_array transformed_objects;
+    TransformLocal2World(objects, transformed_objects);
     for (int i = 0; i < targets.size(); ++i)
     {
         if (targets[i].tracking_num == TrackingState::Die)
@@ -245,4 +371,8 @@ void IMM_UKF_JPDA::Process(const JPDA_UKF_Tracking::object_array &objects)
         }
         targets[i].Update(matched_object, gating_threshold, detection_probability, gate_probability);
     }
+
+    MakeNewTarget(matching_mat, objects);
+    ClassifyStaticObject();
+    Output(objects, out_objects);
 }

@@ -130,12 +130,12 @@ struct MD5Sum< ::JPDA_UKF_Tracking::object_array_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "e91d385083a6f18bcdb564c8ce15cc81";
+    return "81187b16050baf6314918c62baf7c77b";
   }
 
   static const char* value(const ::JPDA_UKF_Tracking::object_array_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xe91d385083a6f18bULL;
-  static const uint64_t static_value2 = 0xcdb564c8ce15cc81ULL;
+  static const uint64_t static_value1 = 0x81187b16050baf63ULL;
+  static const uint64_t static_value2 = 0x14918c62baf7c77bULL;
 };
 
 template<class ContainerAllocator>
@@ -182,7 +182,7 @@ struct Definition< ::JPDA_UKF_Tracking::object_array_<ContainerAllocator> >
 "geometry_msgs/Vector3       variance  ##\n"
 "sensor_msgs/PointCloud2     pointcloud\n"
 "geometry_msgs/PolygonStamped     convex_hull\n"
-"\n"
+"geometry_msgs/Twist      velocity\n"
 "================================================================================\n"
 "MSG: geometry_msgs/Pose\n"
 "# A representation of pose in free space, composed of position and orientation. \n"
@@ -289,6 +289,11 @@ struct Definition< ::JPDA_UKF_Tracking::object_array_<ContainerAllocator> >
 "float32 x\n"
 "float32 y\n"
 "float32 z\n"
+"================================================================================\n"
+"MSG: geometry_msgs/Twist\n"
+"# This expresses velocity in free space broken into its linear and angular parts.\n"
+"Vector3  linear\n"
+"Vector3  angular\n"
 ;
   }
 

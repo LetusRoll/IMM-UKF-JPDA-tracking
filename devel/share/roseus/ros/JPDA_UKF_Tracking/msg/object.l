@@ -20,7 +20,7 @@
 
 (defclass JPDA_UKF_Tracking::object
   :super ros::object
-  :slots (_header _id _pose _dimensions _variance _pointcloud _convex_hull ))
+  :slots (_header _id _pose _dimensions _variance _pointcloud _convex_hull _velocity ))
 
 (defmethod JPDA_UKF_Tracking::object
   (:init
@@ -32,6 +32,7 @@
     ((:variance __variance) (instance geometry_msgs::Vector3 :init))
     ((:pointcloud __pointcloud) (instance sensor_msgs::PointCloud2 :init))
     ((:convex_hull __convex_hull) (instance geometry_msgs::PolygonStamped :init))
+    ((:velocity __velocity) (instance geometry_msgs::Twist :init))
     )
    (send-super :init)
    (setq _header __header)
@@ -41,6 +42,7 @@
    (setq _variance __variance)
    (setq _pointcloud __pointcloud)
    (setq _convex_hull __convex_hull)
+   (setq _velocity __velocity)
    self)
   (:header
    (&rest __header)
@@ -87,6 +89,13 @@
      (progn
        (if __convex_hull (setq _convex_hull (car __convex_hull)))
        _convex_hull)))
+  (:velocity
+   (&rest __velocity)
+   (if (keywordp (car __velocity))
+       (send* _velocity __velocity)
+     (progn
+       (if __velocity (setq _velocity (car __velocity)))
+       _velocity)))
   (:serialization-length
    ()
    (+
@@ -104,6 +113,8 @@
     (send _pointcloud :serialization-length)
     ;; geometry_msgs/PolygonStamped _convex_hull
     (send _convex_hull :serialization-length)
+    ;; geometry_msgs/Twist _velocity
+    (send _velocity :serialization-length)
     ))
   (:serialize
    (&optional strm)
@@ -123,6 +134,8 @@
        (send _pointcloud :serialize s)
      ;; geometry_msgs/PolygonStamped _convex_hull
        (send _convex_hull :serialize s)
+     ;; geometry_msgs/Twist _velocity
+       (send _velocity :serialize s)
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
@@ -141,11 +154,13 @@
      (send _pointcloud :deserialize buf ptr-) (incf ptr- (send _pointcloud :serialization-length))
    ;; geometry_msgs/PolygonStamped _convex_hull
      (send _convex_hull :deserialize buf ptr-) (incf ptr- (send _convex_hull :serialization-length))
+   ;; geometry_msgs/Twist _velocity
+     (send _velocity :deserialize buf ptr-) (incf ptr- (send _velocity :serialization-length))
    ;;
    self)
   )
 
-(setf (get JPDA_UKF_Tracking::object :md5sum-) "75b5aef8e67be81912fbb3bf0345714b")
+(setf (get JPDA_UKF_Tracking::object :md5sum-) "0551e8a26c4794e46875c54cd3aa7a7d")
 (setf (get JPDA_UKF_Tracking::object :datatype-) "JPDA_UKF_Tracking/object")
 (setf (get JPDA_UKF_Tracking::object :definition-)
       "###物体类型
@@ -156,7 +171,7 @@ geometry_msgs/Vector3       dimensions##长宽高
 geometry_msgs/Vector3       variance  ##
 sensor_msgs/PointCloud2     pointcloud
 geometry_msgs/PolygonStamped     convex_hull
-
+geometry_msgs/Twist      velocity
 ================================================================================
 MSG: std_msgs/Header
 # Standard metadata for higher-level stamped data types.
@@ -279,10 +294,16 @@ MSG: geometry_msgs/Point32
 float32 x
 float32 y
 float32 z
+================================================================================
+MSG: geometry_msgs/Twist
+# This expresses velocity in free space broken into its linear and angular parts.
+Vector3  linear
+Vector3  angular
+
 ")
 
 
 
-(provide :JPDA_UKF_Tracking/object "75b5aef8e67be81912fbb3bf0345714b")
+(provide :JPDA_UKF_Tracking/object "0551e8a26c4794e46875c54cd3aa7a7d")
 
 

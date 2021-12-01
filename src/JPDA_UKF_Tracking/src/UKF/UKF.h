@@ -4,7 +4,7 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-09 22:20:50
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-29 22:40:21
+ * @LastEditTime: 2021-11-30 20:27:57
  */
 
 #ifndef UKF_H
@@ -46,6 +46,8 @@ public:
     float k;
     float lambda;
 
+    std::vector<double> vel_history;
+    JPDA_UKF_Tracking::object object_;
     Eigen::MatrixXd mode_prob;
     Eigen::MatrixXd mode_trans_prob;
     Eigen::MatrixXd initial_mode_trans_prob;

@@ -11,9 +11,9 @@ const _deserializer = _ros_msg_utils.Deserialize;
 const _arrayDeserializer = _deserializer.Array;
 const _finder = _ros_msg_utils.Find;
 const _getByteLength = _ros_msg_utils.getByteLength;
-let geometry_msgs = _finder('geometry_msgs');
 let std_msgs = _finder('std_msgs');
 let sensor_msgs = _finder('sensor_msgs');
+let geometry_msgs = _finder('geometry_msgs');
 
 //-----------------------------------------------------------
 
@@ -28,6 +28,7 @@ class object {
       this.variance = null;
       this.pointcloud = null;
       this.convex_hull = null;
+      this.velocity = null;
     }
     else {
       if (initObj.hasOwnProperty('header')) {
@@ -72,6 +73,12 @@ class object {
       else {
         this.convex_hull = new geometry_msgs.msg.PolygonStamped();
       }
+      if (initObj.hasOwnProperty('velocity')) {
+        this.velocity = initObj.velocity
+      }
+      else {
+        this.velocity = new geometry_msgs.msg.Twist();
+      }
     }
   }
 
@@ -91,6 +98,8 @@ class object {
     bufferOffset = sensor_msgs.msg.PointCloud2.serialize(obj.pointcloud, buffer, bufferOffset);
     // Serialize message field [convex_hull]
     bufferOffset = geometry_msgs.msg.PolygonStamped.serialize(obj.convex_hull, buffer, bufferOffset);
+    // Serialize message field [velocity]
+    bufferOffset = geometry_msgs.msg.Twist.serialize(obj.velocity, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -112,6 +121,8 @@ class object {
     data.pointcloud = sensor_msgs.msg.PointCloud2.deserialize(buffer, bufferOffset);
     // Deserialize message field [convex_hull]
     data.convex_hull = geometry_msgs.msg.PolygonStamped.deserialize(buffer, bufferOffset);
+    // Deserialize message field [velocity]
+    data.velocity = geometry_msgs.msg.Twist.deserialize(buffer, bufferOffset);
     return data;
   }
 
@@ -120,7 +131,7 @@ class object {
     length += std_msgs.msg.Header.getMessageSize(object.header);
     length += sensor_msgs.msg.PointCloud2.getMessageSize(object.pointcloud);
     length += geometry_msgs.msg.PolygonStamped.getMessageSize(object.convex_hull);
-    return length + 108;
+    return length + 156;
   }
 
   static datatype() {
@@ -130,7 +141,7 @@ class object {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '75b5aef8e67be81912fbb3bf0345714b';
+    return '0551e8a26c4794e46875c54cd3aa7a7d';
   }
 
   static messageDefinition() {
@@ -144,7 +155,7 @@ class object {
     geometry_msgs/Vector3       variance  ##
     sensor_msgs/PointCloud2     pointcloud
     geometry_msgs/PolygonStamped     convex_hull
-    
+    geometry_msgs/Twist      velocity
     ================================================================================
     MSG: std_msgs/Header
     # Standard metadata for higher-level stamped data types.
@@ -267,6 +278,12 @@ class object {
     float32 x
     float32 y
     float32 z
+    ================================================================================
+    MSG: geometry_msgs/Twist
+    # This expresses velocity in free space broken into its linear and angular parts.
+    Vector3  linear
+    Vector3  angular
+    
     `;
   }
 
@@ -323,6 +340,13 @@ class object {
     }
     else {
       resolved.convex_hull = new geometry_msgs.msg.PolygonStamped()
+    }
+
+    if (msg.velocity !== undefined) {
+      resolved.velocity = geometry_msgs.msg.Twist.Resolve(msg.velocity)
+    }
+    else {
+      resolved.velocity = new geometry_msgs.msg.Twist()
     }
 
     return resolved;

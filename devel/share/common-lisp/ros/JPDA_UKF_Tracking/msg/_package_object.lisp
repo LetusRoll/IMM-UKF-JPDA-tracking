@@ -13,4 +13,6 @@
           POINTCLOUD
           CONVEX_HULL-VAL
           CONVEX_HULL
+          VELOCITY-VAL
+          VELOCITY
 ))

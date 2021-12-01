@@ -12,7 +12,7 @@ import sensor_msgs.msg
 import std_msgs.msg
 
 class object_array(genpy.Message):
-  _md5sum = "e91d385083a6f18bcdb564c8ce15cc81"
+  _md5sum = "81187b16050baf6314918c62baf7c77b"
   _type = "JPDA_UKF_Tracking/object_array"
   _has_header = False  # flag to mark the presence of a Header object
   _full_text = """std_msgs/Header     hearder
@@ -43,7 +43,7 @@ geometry_msgs/Vector3       dimensions##长宽高
 geometry_msgs/Vector3       variance  ##
 sensor_msgs/PointCloud2     pointcloud
 geometry_msgs/PolygonStamped     convex_hull
-
+geometry_msgs/Twist      velocity
 ================================================================================
 MSG: geometry_msgs/Pose
 # A representation of pose in free space, composed of position and orientation. 
@@ -149,7 +149,13 @@ MSG: geometry_msgs/Point32
 
 float32 x
 float32 y
-float32 z"""
+float32 z
+================================================================================
+MSG: geometry_msgs/Twist
+# This expresses velocity in free space broken into its linear and angular parts.
+Vector3  linear
+Vector3  angular
+"""
   __slots__ = ['hearder','objects']
   _slot_types = ['std_msgs/Header','JPDA_UKF_Tracking/object[]']
 
@@ -284,6 +290,13 @@ float32 z"""
         for val4 in _v14.points:
           _x = val4
           buff.write(_get_struct_3f().pack(_x.x, _x.y, _x.z))
+        _v15 = val1.velocity
+        _v16 = _v15.linear
+        _x = _v16
+        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
+        _v17 = _v15.angular
+        _x = _v17
+        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -319,12 +332,12 @@ float32 z"""
       self.objects = []
       for i in range(0, length):
         val1 = JPDA_UKF_Tracking.msg.object()
-        _v15 = val1.header
+        _v18 = val1.header
         start = end
         end += 4
-        (_v15.seq,) = _get_struct_I().unpack(str[start:end])
-        _v16 = _v15.stamp
-        _x = _v16
+        (_v18.seq,) = _get_struct_I().unpack(str[start:end])
+        _v19 = _v18.stamp
+        _x = _v19
         start = end
         end += 8
         (_x.secs, _x.nsecs,) = _get_struct_2I().unpack(str[start:end])
@@ -334,92 +347,34 @@ float32 z"""
         start = end
         end += length
         if python3:
-          _v15.frame_id = str[start:end].decode('utf-8', 'rosmsg')
+          _v18.frame_id = str[start:end].decode('utf-8', 'rosmsg')
         else:
-          _v15.frame_id = str[start:end]
+          _v18.frame_id = str[start:end]
         start = end
         end += 4
         (val1.id,) = _get_struct_I().unpack(str[start:end])
-        _v17 = val1.pose
-        _v18 = _v17.position
-        _x = _v18
-        start = end
-        end += 24
-        (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
-        _v19 = _v17.orientation
-        _x = _v19
-        start = end
-        end += 32
-        (_x.x, _x.y, _x.z, _x.w,) = _get_struct_4d().unpack(str[start:end])
-        _v20 = val1.dimensions
-        _x = _v20
-        start = end
-        end += 24
-        (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
-        _v21 = val1.variance
+        _v20 = val1.pose
+        _v21 = _v20.position
         _x = _v21
         start = end
         end += 24
         (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
-        _v22 = val1.pointcloud
-        _v23 = _v22.header
+        _v22 = _v20.orientation
+        _x = _v22
         start = end
-        end += 4
-        (_v23.seq,) = _get_struct_I().unpack(str[start:end])
-        _v24 = _v23.stamp
+        end += 32
+        (_x.x, _x.y, _x.z, _x.w,) = _get_struct_4d().unpack(str[start:end])
+        _v23 = val1.dimensions
+        _x = _v23
+        start = end
+        end += 24
+        (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
+        _v24 = val1.variance
         _x = _v24
         start = end
-        end += 8
-        (_x.secs, _x.nsecs,) = _get_struct_2I().unpack(str[start:end])
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        start = end
-        end += length
-        if python3:
-          _v23.frame_id = str[start:end].decode('utf-8', 'rosmsg')
-        else:
-          _v23.frame_id = str[start:end]
-        _x = _v22
-        start = end
-        end += 8
-        (_x.height, _x.width,) = _get_struct_2I().unpack(str[start:end])
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        _v22.fields = []
-        for i in range(0, length):
-          val3 = sensor_msgs.msg.PointField()
-          start = end
-          end += 4
-          (length,) = _struct_I.unpack(str[start:end])
-          start = end
-          end += length
-          if python3:
-            val3.name = str[start:end].decode('utf-8', 'rosmsg')
-          else:
-            val3.name = str[start:end]
-          _x = val3
-          start = end
-          end += 9
-          (_x.offset, _x.datatype, _x.count,) = _get_struct_IBI().unpack(str[start:end])
-          _v22.fields.append(val3)
-        _x = _v22
-        start = end
-        end += 9
-        (_x.is_bigendian, _x.point_step, _x.row_step,) = _get_struct_B2I().unpack(str[start:end])
-        _v22.is_bigendian = bool(_v22.is_bigendian)
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        start = end
-        end += length
-        _v22.data = str[start:end]
-        start = end
-        end += 1
-        (_v22.is_dense,) = _get_struct_B().unpack(str[start:end])
-        _v22.is_dense = bool(_v22.is_dense)
-        _v25 = val1.convex_hull
+        end += 24
+        (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
+        _v25 = val1.pointcloud
         _v26 = _v25.header
         start = end
         end += 4
@@ -438,18 +393,87 @@ float32 z"""
           _v26.frame_id = str[start:end].decode('utf-8', 'rosmsg')
         else:
           _v26.frame_id = str[start:end]
-        _v28 = _v25.polygon
+        _x = _v25
+        start = end
+        end += 8
+        (_x.height, _x.width,) = _get_struct_2I().unpack(str[start:end])
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
-        _v28.points = []
+        _v25.fields = []
+        for i in range(0, length):
+          val3 = sensor_msgs.msg.PointField()
+          start = end
+          end += 4
+          (length,) = _struct_I.unpack(str[start:end])
+          start = end
+          end += length
+          if python3:
+            val3.name = str[start:end].decode('utf-8', 'rosmsg')
+          else:
+            val3.name = str[start:end]
+          _x = val3
+          start = end
+          end += 9
+          (_x.offset, _x.datatype, _x.count,) = _get_struct_IBI().unpack(str[start:end])
+          _v25.fields.append(val3)
+        _x = _v25
+        start = end
+        end += 9
+        (_x.is_bigendian, _x.point_step, _x.row_step,) = _get_struct_B2I().unpack(str[start:end])
+        _v25.is_bigendian = bool(_v25.is_bigendian)
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        start = end
+        end += length
+        _v25.data = str[start:end]
+        start = end
+        end += 1
+        (_v25.is_dense,) = _get_struct_B().unpack(str[start:end])
+        _v25.is_dense = bool(_v25.is_dense)
+        _v28 = val1.convex_hull
+        _v29 = _v28.header
+        start = end
+        end += 4
+        (_v29.seq,) = _get_struct_I().unpack(str[start:end])
+        _v30 = _v29.stamp
+        _x = _v30
+        start = end
+        end += 8
+        (_x.secs, _x.nsecs,) = _get_struct_2I().unpack(str[start:end])
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        start = end
+        end += length
+        if python3:
+          _v29.frame_id = str[start:end].decode('utf-8', 'rosmsg')
+        else:
+          _v29.frame_id = str[start:end]
+        _v31 = _v28.polygon
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        _v31.points = []
         for i in range(0, length):
           val4 = geometry_msgs.msg.Point32()
           _x = val4
           start = end
           end += 12
           (_x.x, _x.y, _x.z,) = _get_struct_3f().unpack(str[start:end])
-          _v28.points.append(val4)
+          _v31.points.append(val4)
+        _v32 = val1.velocity
+        _v33 = _v32.linear
+        _x = _v33
+        start = end
+        end += 24
+        (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
+        _v34 = _v32.angular
+        _x = _v34
+        start = end
+        end += 24
+        (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
         self.objects.append(val1)
       return self
     except struct.error as e:
@@ -474,13 +498,13 @@ float32 z"""
       length = len(self.objects)
       buff.write(_struct_I.pack(length))
       for val1 in self.objects:
-        _v29 = val1.header
-        _x = _v29.seq
+        _v35 = val1.header
+        _x = _v35.seq
         buff.write(_get_struct_I().pack(_x))
-        _v30 = _v29.stamp
-        _x = _v30
+        _v36 = _v35.stamp
+        _x = _v36
         buff.write(_get_struct_2I().pack(_x.secs, _x.nsecs))
-        _x = _v29.frame_id
+        _x = _v35.frame_id
         length = len(_x)
         if python3 or type(_x) == unicode:
           _x = _x.encode('utf-8')
@@ -488,37 +512,37 @@ float32 z"""
         buff.write(struct.Struct('<I%ss'%length).pack(length, _x))
         _x = val1.id
         buff.write(_get_struct_I().pack(_x))
-        _v31 = val1.pose
-        _v32 = _v31.position
-        _x = _v32
-        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
-        _v33 = _v31.orientation
-        _x = _v33
-        buff.write(_get_struct_4d().pack(_x.x, _x.y, _x.z, _x.w))
-        _v34 = val1.dimensions
-        _x = _v34
-        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
-        _v35 = val1.variance
-        _x = _v35
-        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
-        _v36 = val1.pointcloud
-        _v37 = _v36.header
-        _x = _v37.seq
-        buff.write(_get_struct_I().pack(_x))
-        _v38 = _v37.stamp
+        _v37 = val1.pose
+        _v38 = _v37.position
         _x = _v38
+        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
+        _v39 = _v37.orientation
+        _x = _v39
+        buff.write(_get_struct_4d().pack(_x.x, _x.y, _x.z, _x.w))
+        _v40 = val1.dimensions
+        _x = _v40
+        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
+        _v41 = val1.variance
+        _x = _v41
+        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
+        _v42 = val1.pointcloud
+        _v43 = _v42.header
+        _x = _v43.seq
+        buff.write(_get_struct_I().pack(_x))
+        _v44 = _v43.stamp
+        _x = _v44
         buff.write(_get_struct_2I().pack(_x.secs, _x.nsecs))
-        _x = _v37.frame_id
+        _x = _v43.frame_id
         length = len(_x)
         if python3 or type(_x) == unicode:
           _x = _x.encode('utf-8')
           length = len(_x)
         buff.write(struct.Struct('<I%ss'%length).pack(length, _x))
-        _x = _v36
+        _x = _v42
         buff.write(_get_struct_2I().pack(_x.height, _x.width))
-        length = len(_v36.fields)
+        length = len(_v42.fields)
         buff.write(_struct_I.pack(length))
-        for val3 in _v36.fields:
+        for val3 in _v42.fields:
           _x = val3.name
           length = len(_x)
           if python3 or type(_x) == unicode:
@@ -527,36 +551,43 @@ float32 z"""
           buff.write(struct.Struct('<I%ss'%length).pack(length, _x))
           _x = val3
           buff.write(_get_struct_IBI().pack(_x.offset, _x.datatype, _x.count))
-        _x = _v36
+        _x = _v42
         buff.write(_get_struct_B2I().pack(_x.is_bigendian, _x.point_step, _x.row_step))
-        _x = _v36.data
+        _x = _v42.data
         length = len(_x)
         # - if encoded as a list instead, serialize as bytes instead of string
         if type(_x) in [list, tuple]:
           buff.write(struct.Struct('<I%sB'%length).pack(length, *_x))
         else:
           buff.write(struct.Struct('<I%ss'%length).pack(length, _x))
-        _x = _v36.is_dense
+        _x = _v42.is_dense
         buff.write(_get_struct_B().pack(_x))
-        _v39 = val1.convex_hull
-        _v40 = _v39.header
-        _x = _v40.seq
+        _v45 = val1.convex_hull
+        _v46 = _v45.header
+        _x = _v46.seq
         buff.write(_get_struct_I().pack(_x))
-        _v41 = _v40.stamp
-        _x = _v41
+        _v47 = _v46.stamp
+        _x = _v47
         buff.write(_get_struct_2I().pack(_x.secs, _x.nsecs))
-        _x = _v40.frame_id
+        _x = _v46.frame_id
         length = len(_x)
         if python3 or type(_x) == unicode:
           _x = _x.encode('utf-8')
           length = len(_x)
         buff.write(struct.Struct('<I%ss'%length).pack(length, _x))
-        _v42 = _v39.polygon
-        length = len(_v42.points)
+        _v48 = _v45.polygon
+        length = len(_v48.points)
         buff.write(_struct_I.pack(length))
-        for val4 in _v42.points:
+        for val4 in _v48.points:
           _x = val4
           buff.write(_get_struct_3f().pack(_x.x, _x.y, _x.z))
+        _v49 = val1.velocity
+        _v50 = _v49.linear
+        _x = _v50
+        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
+        _v51 = _v49.angular
+        _x = _v51
+        buff.write(_get_struct_3d().pack(_x.x, _x.y, _x.z))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -593,12 +624,12 @@ float32 z"""
       self.objects = []
       for i in range(0, length):
         val1 = JPDA_UKF_Tracking.msg.object()
-        _v43 = val1.header
+        _v52 = val1.header
         start = end
         end += 4
-        (_v43.seq,) = _get_struct_I().unpack(str[start:end])
-        _v44 = _v43.stamp
-        _x = _v44
+        (_v52.seq,) = _get_struct_I().unpack(str[start:end])
+        _v53 = _v52.stamp
+        _x = _v53
         start = end
         end += 8
         (_x.secs, _x.nsecs,) = _get_struct_2I().unpack(str[start:end])
@@ -608,40 +639,40 @@ float32 z"""
         start = end
         end += length
         if python3:
-          _v43.frame_id = str[start:end].decode('utf-8', 'rosmsg')
+          _v52.frame_id = str[start:end].decode('utf-8', 'rosmsg')
         else:
-          _v43.frame_id = str[start:end]
+          _v52.frame_id = str[start:end]
         start = end
         end += 4
         (val1.id,) = _get_struct_I().unpack(str[start:end])
-        _v45 = val1.pose
-        _v46 = _v45.position
-        _x = _v46
+        _v54 = val1.pose
+        _v55 = _v54.position
+        _x = _v55
         start = end
         end += 24
         (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
-        _v47 = _v45.orientation
-        _x = _v47
+        _v56 = _v54.orientation
+        _x = _v56
         start = end
         end += 32
         (_x.x, _x.y, _x.z, _x.w,) = _get_struct_4d().unpack(str[start:end])
-        _v48 = val1.dimensions
-        _x = _v48
+        _v57 = val1.dimensions
+        _x = _v57
         start = end
         end += 24
         (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
-        _v49 = val1.variance
-        _x = _v49
+        _v58 = val1.variance
+        _x = _v58
         start = end
         end += 24
         (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
-        _v50 = val1.pointcloud
-        _v51 = _v50.header
+        _v59 = val1.pointcloud
+        _v60 = _v59.header
         start = end
         end += 4
-        (_v51.seq,) = _get_struct_I().unpack(str[start:end])
-        _v52 = _v51.stamp
-        _x = _v52
+        (_v60.seq,) = _get_struct_I().unpack(str[start:end])
+        _v61 = _v60.stamp
+        _x = _v61
         start = end
         end += 8
         (_x.secs, _x.nsecs,) = _get_struct_2I().unpack(str[start:end])
@@ -651,17 +682,17 @@ float32 z"""
         start = end
         end += length
         if python3:
-          _v51.frame_id = str[start:end].decode('utf-8', 'rosmsg')
+          _v60.frame_id = str[start:end].decode('utf-8', 'rosmsg')
         else:
-          _v51.frame_id = str[start:end]
-        _x = _v50
+          _v60.frame_id = str[start:end]
+        _x = _v59
         start = end
         end += 8
         (_x.height, _x.width,) = _get_struct_2I().unpack(str[start:end])
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
-        _v50.fields = []
+        _v59.fields = []
         for i in range(0, length):
           val3 = sensor_msgs.msg.PointField()
           start = end
@@ -677,29 +708,29 @@ float32 z"""
           start = end
           end += 9
           (_x.offset, _x.datatype, _x.count,) = _get_struct_IBI().unpack(str[start:end])
-          _v50.fields.append(val3)
-        _x = _v50
+          _v59.fields.append(val3)
+        _x = _v59
         start = end
         end += 9
         (_x.is_bigendian, _x.point_step, _x.row_step,) = _get_struct_B2I().unpack(str[start:end])
-        _v50.is_bigendian = bool(_v50.is_bigendian)
+        _v59.is_bigendian = bool(_v59.is_bigendian)
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
         start = end
         end += length
-        _v50.data = str[start:end]
+        _v59.data = str[start:end]
         start = end
         end += 1
-        (_v50.is_dense,) = _get_struct_B().unpack(str[start:end])
-        _v50.is_dense = bool(_v50.is_dense)
-        _v53 = val1.convex_hull
-        _v54 = _v53.header
+        (_v59.is_dense,) = _get_struct_B().unpack(str[start:end])
+        _v59.is_dense = bool(_v59.is_dense)
+        _v62 = val1.convex_hull
+        _v63 = _v62.header
         start = end
         end += 4
-        (_v54.seq,) = _get_struct_I().unpack(str[start:end])
-        _v55 = _v54.stamp
-        _x = _v55
+        (_v63.seq,) = _get_struct_I().unpack(str[start:end])
+        _v64 = _v63.stamp
+        _x = _v64
         start = end
         end += 8
         (_x.secs, _x.nsecs,) = _get_struct_2I().unpack(str[start:end])
@@ -709,21 +740,32 @@ float32 z"""
         start = end
         end += length
         if python3:
-          _v54.frame_id = str[start:end].decode('utf-8', 'rosmsg')
+          _v63.frame_id = str[start:end].decode('utf-8', 'rosmsg')
         else:
-          _v54.frame_id = str[start:end]
-        _v56 = _v53.polygon
+          _v63.frame_id = str[start:end]
+        _v65 = _v62.polygon
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
-        _v56.points = []
+        _v65.points = []
         for i in range(0, length):
           val4 = geometry_msgs.msg.Point32()
           _x = val4
           start = end
           end += 12
           (_x.x, _x.y, _x.z,) = _get_struct_3f().unpack(str[start:end])
-          _v56.points.append(val4)
+          _v65.points.append(val4)
+        _v66 = val1.velocity
+        _v67 = _v66.linear
+        _x = _v67
+        start = end
+        end += 24
+        (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
+        _v68 = _v66.angular
+        _x = _v68
+        start = end
+        end += 24
+        (_x.x, _x.y, _x.z,) = _get_struct_3d().unpack(str[start:end])
         self.objects.append(val1)
       return self
     except struct.error as e:
