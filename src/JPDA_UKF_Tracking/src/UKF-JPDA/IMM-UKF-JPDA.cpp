@@ -3,7 +3,7 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-15 21:16:54
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-30 23:01:01
+ * @LastEditTime: 2021-12-01 14:26:58
  */
 
 #include "IMM-UKF-JPDA.h"
@@ -22,11 +22,14 @@ IMM_UKF_JPDA::IMM_UKF_JPDA(ros::NodeHandle nh, ros::NodeHandle private_nh)
     private_nh.param<double>("current_vel_threshold", current_vel_threshold, 0.5);
     private_nh.param<int>("static_frame", static_frame, 3);
 
-    ros::Subscriber object_sub = nh.subscribe("/objects", 1, &Callback, this);
+    ros::Subscriber object_sub = nh.subscribe("/objects", 1, &IMM_UKF_JPDA::Callback, this);
     ros::Publisher object_pub = nh.advertise<JPDA_UKF_Tracking::object_array>("/tracking_objects", 100);
     ros::spin();
 }
-
+IMM_UKF_JPDA::~IMM_UKF_JPDA()
+{
+    //
+}
 void IMM_UKF_JPDA::Callback(const JPDA_UKF_Tracking::object_array &objects)
 {
     if (GetTransform())
@@ -158,7 +161,7 @@ void IMM_UKF_JPDA::findMaxSMaxZ(UKF target, Eigen::MatrixXd max_Z, Eigen::Matrix
 }
 
 void IMM_UKF_JPDA::MeasurementValidation(const JPDA_UKF_Tracking::object_array &objects,
-                                         Eigen::MatrixXd matching_mat, UKF target, Eigen::MatrixXd max_Z,
+                                         Eigen::VectorXd matching_mat, UKF target, Eigen::MatrixXd max_Z,
                                          Eigen::MatrixXd max_S, JPDA_UKF_Tracking::object_array matched_object)
 {
 
@@ -188,7 +191,7 @@ void IMM_UKF_JPDA::MeasurementValidation(const JPDA_UKF_Tracking::object_array &
     matching_mat[matched_index] = 1;
 }
 
-void IMM_UKF_JPDA::MakeNewTarget(Eigen::MatrixXd matching_mat, const JPDA_UKF_Tracking::object_array &objects)
+void IMM_UKF_JPDA::MakeNewTarget(Eigen::VectorXd matching_mat, const JPDA_UKF_Tracking::object_array &objects)
 {
     for (int i = 0; i < objects.objects.size(); ++i)
     {
@@ -334,8 +337,8 @@ void IMM_UKF_JPDA::Process(const JPDA_UKF_Tracking::object_array &objects, JPDA_
         Output(objects, out_objects);
         init = true;
     }
-    Eigen::MatrixXd matching_mat;
-    matching_mat.resize(objects.objects.size(), 1);
+    Eigen::VectorXd matching_mat;
+    matching_mat.resize(objects.objects.size());
     matching_mat.fill(0);
 
     JPDA_UKF_Tracking::object_array transformed_objects;

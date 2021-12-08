@@ -3,13 +3,13 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-30 17:12:19
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-30 23:01:15
+ * @LastEditTime: 2021-12-01 14:22:53
  */
 #include "../UKF/UKF.h"
 #include "IMM-UKF-JPDA.h"
 #include <ros/ros.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     ros::init(argc, argv, "tracking");
     ros::NodeHandle nh;

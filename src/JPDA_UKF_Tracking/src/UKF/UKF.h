@@ -4,16 +4,16 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-09 22:20:50
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-30 20:27:57
+ * @LastEditTime: 2021-12-01 11:33:00
  */
 
 #ifndef UKF_H
 #define UKF_H
 
-#include <Eigen/Dense>
+#include "/usr/include/eigen3/Eigen/Dense"
 #include <vector>
-#include "JPDA_UKF_Tracking/object.h"
 #include "JPDA_UKF_Tracking/object_array.h"
+#include "JPDA_UKF_Tracking/object.h"
 const double PI = 3.14159;
 enum TrackingState : int
 {
@@ -48,7 +48,7 @@ public:
 
     std::vector<double> vel_history;
     JPDA_UKF_Tracking::object object_;
-    Eigen::MatrixXd mode_prob;
+    Eigen::VectorXd mode_prob;
     Eigen::MatrixXd mode_trans_prob;
     Eigen::MatrixXd initial_mode_trans_prob;
 
@@ -67,10 +67,10 @@ public:
     Eigen::VectorXd w_s; //期望
     Eigen::VectorXd w_c; //方差
 
-    Eigen::MatrixXd X_merge; //状态量   x y v yaw dyaw
-    Eigen::MatrixXd X_cv;
-    Eigen::MatrixXd X_ctrv;
-    Eigen::MatrixXd X_rm;
+    Eigen::VectorXd X_merge; //状态量   x y v yaw dyaw
+    Eigen::VectorXd X_cv;
+    Eigen::VectorXd X_ctrv;
+    Eigen::VectorXd X_rm;
 
     Eigen::MatrixXd P_merge; //状态量方差
     Eigen::MatrixXd P_cv;

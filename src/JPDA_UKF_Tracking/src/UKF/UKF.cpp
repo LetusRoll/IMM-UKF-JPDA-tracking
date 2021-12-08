@@ -3,7 +3,7 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-09 22:20:42
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-29 22:44:25
+ * @LastEditTime: 2021-12-01 14:27:21
  */
 
 #include "UKF.h"
@@ -16,17 +16,17 @@ UKF::UKF()
     is_stable = false;
     is_static = false;
 
-    mode_prob.resize(3, 1);
+    mode_prob.resize(3);
     initial_mode_trans_prob.resize(3, 3);
     mode_trans_prob.resize(3, 3);
 
     w_c.resize(2 * state_num_ + 1);
     w_s.resize(2 * state_num_ + 1);
 
-    X_merge.resize(state_num_, 1);
-    X_cv.resize(state_num_, 1);
-    X_ctrv.resize(state_num_, 1);
-    X_rm.resize(state_num_, 1);
+    X_merge.resize(state_num_);
+    X_cv.resize(state_num_);
+    X_ctrv.resize(state_num_);
+    X_rm.resize(state_num_);
 
     X_predict_sig_cv.resize(state_num_, 2 * state_num_ + 1);
     X_predict_sig_ctrv.resize(state_num_, 2 * state_num_ + 1);
@@ -557,7 +557,10 @@ void UKF::UpdateMotion(JPDA_UKF_Tracking::object_array matched_object, std::vect
 
     for (int i = 0; i < matched_object.objects.size(); ++i)
     {
-        Eigen::VectorXd meas(matched_object.objects[i].pose.position.x, matched_object.objects[i].pose.position.y);
+        Eigen::VectorXd meas;
+        meas << matched_object.objects[i].pose.position.x;
+        matched_object.objects[i].pose.position.y;
+
         Eigen::VectorXd diff_cv = meas - Z_predict_cv;
         vec_diff_cv.push_back(diff_cv);
         Eigen::VectorXd diff_ctrv = meas - Z_predict_ctrv;

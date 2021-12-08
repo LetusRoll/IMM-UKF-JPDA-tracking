@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "/opt/ros/noetic/include/**",
                 "/usr/include/**",
-                "${workspaceFolder}/devel/include/**"
+                "/usr/include/eigen3/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

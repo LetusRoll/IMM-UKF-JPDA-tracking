@@ -1,2 +1,2 @@
 JPDA_UKF_Tracking:tf_pub
--DCATKIN_DEVEL_PREFIX=/home/cxy/tracking_ws/devel -DCMAKE_INSTALL_PREFIX=/home/cxy/tracking_ws/install -G Unix Makefiles
+-DCATKIN_WHITELIST_PACKAGES=tf_pub -DCATKIN_DEVEL_PREFIX=/home/cxy/tracking_ws/devel -DCMAKE_INSTALL_PREFIX=/home/cxy/tracking_ws/install -G Unix Makefiles

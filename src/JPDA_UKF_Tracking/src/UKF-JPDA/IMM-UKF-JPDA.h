@@ -4,7 +4,7 @@
  * @Autor: C-Xingyu
  * @Date: 2021-11-15 19:49:36
  * @LastEditors: C-Xingyu
- * @LastEditTime: 2021-11-30 22:53:57
+ * @LastEditTime: 2021-12-01 11:38:45
  */
 #ifndef IMM_UKF_JPDA_H
 #define IMM_UKF_JPDA_H
@@ -16,7 +16,7 @@
 #include <tf/transform_listener.h>
 #include "JPDA_UKF_Tracking/object_array.h"
 #include "JPDA_UKF_Tracking/object.h"
-#include "UKF/UKF.h"
+#include "../UKF/UKF.h"
 #include <vector>
 
 using namespace std;
@@ -60,7 +60,7 @@ public:
                          Eigen::MatrixXd max_Z, Eigen::MatrixXd max_S);
     void findMaxSMaxZ(UKF target, Eigen::MatrixXd max_Z, Eigen::MatrixXd max_S);
 
-    void MeasurementValidation(const JPDA_UKF_Tracking::object_array &objects, Eigen::MatrixXd matching_mat,
+    void MeasurementValidation(const JPDA_UKF_Tracking::object_array &objects, Eigen::VectorXd matching_mat,
                                UKF target, Eigen::MatrixXd max_Z, Eigen::MatrixXd max_S,
                                JPDA_UKF_Tracking::object_array matched_object);
 
@@ -70,7 +70,7 @@ public:
 
     void Process(const JPDA_UKF_Tracking::object_array &objects, JPDA_UKF_Tracking::object_array &out_objects);
 
-    void MakeNewTarget(Eigen::MatrixXd matching_mat, const JPDA_UKF_Tracking::object_array &objects);
+    void MakeNewTarget(Eigen::VectorXd matching_mat, const JPDA_UKF_Tracking::object_array &objects);
 
     void ClassifyStaticObject();
 };
